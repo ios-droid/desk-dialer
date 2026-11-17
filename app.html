@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Desk Dialer</title>
+<link rel="icon" href="icons/icon32.png">
+<script src="theme.js"></script>
+<script src="mk-engine.js"></script>
+<script src="mk-poses.js"></script>
+<script src="mk-extra.js"></script>
+<script src="mk-critters.js"></script>
+<script src="sprites.js"></script>
+<script src="license.js"></script>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="app" id="app">
+  <header class="top">
+    <div class="brand"><div class="logo mkx" data-k="logo" title="Poke the monkey"></div><div><b>Desk Dialer</b><small id="sub">Starting…</small></div></div>
+    <div class="hs">
+      <button class="rdy" id="rd-ph" data-go="setup"></button>
+      <button class="rdy" id="rd-sh" data-go="setup"></button>
+      <button class="ib" id="rptBtn" title="Report a problem to the admin"></button>
+      <button class="ib" id="theme" title="Light / dark"></button>
+      <button class="ib" id="full" title="Open in a full tab"></button>
+    </div>
+  </header>
+  <nav class="tabs"><i id="ind"></i>
+    <button data-t="results" id="tb-results"></button>
+    <button data-t="calls" id="tb-calls"></button>
+    <button data-t="setup" id="tb-setup"></button>
+  </nav>
+
+  <main>
+    <!-- CONTACTS -->
+    <section class="view" id="v-results" hidden><div class="wrap">
+      <div class="shp" id="shPanel"></div>
+      <div class="chips lchips" id="slChips" hidden></div>
+      <div class="pipe" id="pipe" hidden></div>
+      <div class="kpis k4" id="kpis"></div>
+      <div class="row tools"><button class="btn sm" id="imp" title="Import a CSV file"></button><button class="btn sm" id="rexp" title="Download CSV"></button><button class="btn sm" id="rsync" title="Send to your linked sheet" hidden></button></div>
+
+      <div id="rv-list" class="fld" style="gap:16px">
+        <div class="row"><input id="rsearch" type="search" placeholder="Search name or phone"><select id="rsort"><option value="added">Imported order</option><option value="recent">Recently called</option><option value="name">Name</option></select></div>
+        <div class="tbl" id="rtable"></div>
+        <button class="btn" id="rmore" hidden></button>
+        <div class="row"><button class="btn sm" id="load">Load saved</button><button class="btn sm red" id="clear">Clear results</button></div>
+      </div>
+    </div></section>
+
+    <!-- CALLS -->
+    <section class="view" id="v-calls"><div class="wrap">
+      <div class="chips lchips" id="slChipsC" hidden></div>
+      <div class="cdash" id="cdash"></div>
+      <button class="btn go" id="callNext"></button>
+      <details id="prefs"><summary><span class="sum"><span class="ico" data-i="tune"></span>Preferences</span></summary><div class="in">
+        <div class="pref"><label class="sw"><input type="checkbox" id="pAuto">Call the next contact automatically</label><span class="pv">after <input type="number" id="pAutoSec" min="0" max="60"> sec</span></div>
+        <div class="pref"><label class="sw"><input type="checkbox" id="pHang">Hang up if nobody answers</label><span class="pv">after <input type="number" id="pHangSec" min="5" max="180"> sec</span></div>
+        <label class="sw sub"><input type="checkbox" id="pHangNext">then call the next contact</label>
+        <label class="sw"><input type="checkbox" id="pSkipNo">Call next skips “Not answered” contacts</label>
+        
+        <div class="fld"><span class="mu">Called By (this name is written in the sheet after every call)</span><input id="pBy" type="text" placeholder="Your name"></div>
+        <label class="sw"><input type="checkbox" id="pPad">Show the remark pad in the call window</label>
+        <label class="sw"><input type="checkbox" id="pHs">After dialing, press this phone key to move audio off the speaker</label>
+        <div class="fld"><span class="mu">Key name (HEADSET, OFFHOOK, SPEAKER)</span><input id="pHsKey" type="text" placeholder="HEADSET"></div>
+        <label class="sw"><input type="checkbox" id="pMute">Mute the desk phone's microphone once the call is answered</label>
+        <label class="sw"><input type="checkbox" id="pSnd">Call sounds</label>
+      </div></details>
+      <div class="seg" id="cseg"></div>
+      <div class="row"><input id="csearch" type="search" placeholder="Search name or phone"><button class="btn" id="cfBtn" title="More filters" hidden></button><select id="csort"><option value="added">Imported order</option><option value="recent">Recently called</option><option value="name">Name</option></select></div>
+      <div class="chips" id="cchips" hidden></div>
+      <div class="list" id="clist"></div>
+      <button class="btn" id="cmore" hidden></button>
+      <details><summary>Call history</summary><div class="in" id="chist"></div></details>
+    </div></section>
+
+    <!-- SETUP -->
+    <section class="view" id="v-setup" hidden><div class="wrap">
+      <div class="card acct" id="acct"></div>
+      <div class="card">
+        <div class="ch"><div class="ci" data-i="phone"></div><div><b>Desk phone</b><small>Grandstream GRP260x</small></div><span class="badge" id="b-dp"></span></div>
+        <label class="sw"><input type="checkbox" id="dpOn">Dial from my desk phone</label>
+        <div class="row"><input id="dpIp" type="text" placeholder="Phone IP"><input id="dpPass" type="password" placeholder="Passcode"></div>
+        <div class="row"><input id="lapIp" type="text" placeholder="Laptop IP"><button class="btn sm" id="lapDetect">Detect</button><button class="btn sm" id="lapCopy">Copy</button></div>
+        <div class="row"><input id="dpPre" type="text" placeholder="Dial prefix (optional)" style="max-width:190px;flex:none"><button class="btn sm" id="dpPing">Check phone</button><span class="mu" id="dpPingMsg"></span></div>
+        <div class="row"><input id="dpNum" type="text" placeholder="Your own mobile number"><button class="btn sm" id="dpTest">Test dial</button></div>
+      </div>
+
+      <div class="card">
+        <div class="ch"><div class="ci" data-i="phone"></div><div><b>Laptop softphone</b><small>Call or listen from your laptop</small></div></div>
+        <label class="sw"><input type="checkbox" id="jnDial">Place calls from my laptop softphone instead of the desk phone</label>
+        <label class="sw"><input type="checkbox" id="jnOn">Join each answered desk phone call on my laptop</label>
+        <div class="row"><input id="jnPbx" type="text" placeholder="PBX IP (e.g. 192.168.0.x)" autocomplete="off"><input id="jnExt" type="text" placeholder="Desk phone extension" style="max-width:150px;flex:none"></div>
+        <div class="row"><input id="jnCode" type="text" placeholder="Barge code (default *56)" style="max-width:190px;flex:none"><button class="btn sm" id="jnTest">Join current call</button><span class="mu" id="jnMsg"></span></div>
+      </div>
+
+      <div class="card">
+        <div class="ch"><div class="ci" data-i="check"></div><div><b>Auto-sync</b><small>Pickup, hang-up and call time, straight from the phone</small></div><span class="badge" id="b-sync"></span></div>
+        <label class="sw"><input type="checkbox" id="detOn" checked>Sync calls automatically</label>
+        <div id="calMsg" class="mu"></div>
+        <div class="row"><button class="btn sm ink" id="calGo">Calibrate</button><button class="btn sm" id="calAns" hidden>I answered</button><button class="btn sm" id="calHang" hidden>I hung up</button><button class="btn sm" id="calReset" hidden>Forget</button></div>
+        <details><summary>Advanced</summary><div class="in">
+          <div class="row"><input id="stPath" type="text" placeholder="Extra status endpoint (optional)"><button class="btn sm" id="watch">Watch phone</button></div>
+          <div class="row"><input id="reConn" type="text" placeholder="Connected looks like"><input id="reRing" type="text" placeholder="Ringing looks like"></div>
+          <div class="watch" id="watchOut">Nothing yet.</div>
+          <div class="log" id="log"></div>
+        </div></details>
+      </div>
+
+      <div class="card">
+        <div class="ch"><div class="ci" data-i="table"></div><div><b>Google Sheet</b><small>Call Status, time, talk time and caller are logged</small></div><span class="badge" id="b-sh"></span></div>
+        <div class="shl off" id="shLinked">Not linked</div>
+        <div class="row"><input id="shUrl" type="text" placeholder="Web app URL (ends in /exec)" autocomplete="off"></div>
+        <div class="row"><input id="shKey" type="text" placeholder="Secret key (the text after TOKEN in your script)" autocomplete="off" spellcheck="false"><button class="btn sm" id="shTest">Test</button></div>
+        <div class="mu" id="shMsg"></div>
+        <details><summary>Set up a new sheet</summary><div class="in">
+          <div class="row"><button class="btn sm ink" id="shCopy">Copy script</button><button class="btn sm" id="shNew">New sheet</button></div>
+          <ol class="steps">
+            <li><div><b>Copy script</b><span>The secret key is filled in for you.</span></div></li>
+            <li><div><b>Paste into your sheet</b><span>Extensions › Apps Script › select all › paste › Save.</span></div></li>
+            <li><div><b>Deploy</b><span>Deploy › New deployment › Web app. Execute as <b>Me</b>, access <b>Anyone</b>.</span></div></li>
+            <li><div><b>Paste the URL above and press Test</b><span>You only do this once. Lost the key? Paste it from your script's <b>const TOKEN</b> line, no redeploy needed.</span></div></li>
+          </ol>
+        </div></details>
+      </div>
+
+      <div class="card" id="lookCard">
+        <div class="ch"><div class="ci" data-i="bolt"></div><div><b>Colours</b><small>Pick a look. Dark mode is the moon in the header.</small></div></div>
+        <div class="pals" id="palPick"></div>
+      </div>
+
+      <div class="card" id="rptCard">
+        <div class="ch"><div class="ci" data-i="chat"></div><div><b>Message the admin</b><small>Something not working? Tell the admin. Polly delivers it.</small></div></div>
+        <div class="rptTop"><span id="rptBird" class="mkx" data-k="parrot"></span><select id="rptCat"></select></div>
+        <textarea id="rptMsg" maxlength="1500" rows="4" placeholder="What happened? What did you expect to happen? Steps to repeat it help a lot."></textarea>
+        <div class="rptRow"><label class="sw"><input type="checkbox" id="rptDiag" checked>Include diagnostics</label><span class="mu" id="rptCount">0 / 1500</span></div>
+        <div class="mu rptNote">Diagnostics = app version, browser, which settings are filled in and the last log lines. Never passwords, contact names or phone numbers. Please do not type passwords in your message either.</div>
+        <div class="row"><button class="btn go" id="rptSend">Send to admin</button></div>
+        <div class="mu" id="rptStatus"></div>
+        <div class="rptList" id="rptList"></div>
+      </div>
+      <div class="card" id="wellCard">
+        <div class="ch"><div class="ci" data-i="bolt"></div><div><b>Monkey buddy &amp; breaks</b><small>Pep talks, water and lunch reminders</small></div></div>
+        <div class="buddies" id="buddyPick"></div>
+        <div class="pref"><label class="sw"><input type="checkbox" id="wPep">Motivational lines</label><span class="pv">every <input type="number" id="wPepMin" min="5" max="240"> min</span></div>
+        <div class="pref"><label class="sw"><input type="checkbox" id="wWater">Water reminders</label><span class="pv">every <input type="number" id="wWaterMin" min="10" max="240"> min</span></div>
+        <div class="pref"><label class="sw"><input type="checkbox" id="wLunchOn">Lunch time</label><span class="pv"><input type="time" id="wLunch"></span></div>
+        <div class="pref"><span>Lunch break timer</span><span class="pv"><input type="number" id="wLunchLen" min="5" max="180"> min</span></div>
+        <div class="row"><button class="btn sm" id="pvPep">Pep talk</button><button class="btn sm" id="pvWater">Water</button><button class="btn sm" id="pvLunch">Lunch</button></div>
+        <div class="mu" id="waterCount"></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci" data-i="chat"></div><b>WhatsApp / SMS message</b></div>
+        <textarea id="tpl"></textarea>
+        <div class="row"><span class="mu grow">{name} · {fullname}</span>Country code <input id="cc" type="text" placeholder="e.g. 1" style="max-width:64px;flex:none"></div>
+        <div class="prev" id="prev"></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci" data-i="down"></div><div><b>Backup</b><small>Settings also sync through your Chrome account</small></div></div>
+        <div class="row"><button class="btn sm" id="bkExp">Export backup</button><button class="btn sm" id="bkImp">Import backup</button></div>
+        <input type="file" id="bkFile" accept=".json,application/json" hidden>
+      </div>
+    </div></section>
+  </main>
+
+  <!-- Load from Google Sheet -->
+  <div class="modal" id="sl" hidden>
+    <div class="icard slc">
+      <div class="ih"><b>Load from Google Sheet</b><button class="ib" id="slx"></button></div>
+      <div class="fld sf1"><span class="lbl">1 · Pick the tab</span>
+        <div class="row"><select id="slTab" class="grow"></select><button class="btn sm" id="slRefresh">Refresh</button></div>
+        <div class="mu" id="slInfo"></div></div>
+      <div class="fld sf1" id="slColsBox" hidden><span class="lbl">2 · Columns <small class="mu" id="slColsHint"></small></span>
+        <div class="imgrid">
+          <label>Phone<select id="slPhone"></select></label>
+          <label>Name<select id="slName2"></select></label>
+          <label>Email<select id="slMail"></select></label>
+        </div></div>
+      <div class="fld sf1" id="slRulesBox" hidden><span class="lbl">3 · Which contacts?</span>
+        <div id="slRules"></div>
+        <button class="btn sm" id="slAddRule">+ Add a rule</button>
+        <div class="fld"><span class="mu">Sn range (leave empty for all rows)</span><div class="row"><input id="slSnFrom" type="text" inputmode="numeric" placeholder="From Sn, e.g. 1"><input id="slSnTo" type="text" inputmode="numeric" placeholder="To Sn, e.g. 200"></div></div>
+        <label class="sw" id="slSkipW"><input type="checkbox" id="slSkip" checked>Skip contacts already answered / not answered (Call again stays)</label></div>
+      <div class="imprev" id="slPrev"></div>
+      <div class="seg" id="slMode"><button data-m="replace" class="on">Replace list</button><button data-m="add">Add to list</button></div>
+      <input id="slSave" type="text" placeholder="Save this as a quick list (optional), e.g. Kathmandu · New" autocomplete="off">
+      <button class="btn go" id="slGo" disabled>Load contacts</button>
+    </div>
+  </div>
+
+  <!-- CSV import -->
+  <div class="modal" id="im" hidden>
+    <div class="icard">
+      <div class="ih"><b>Import contacts</b><button class="ib" id="imx"></button></div>
+      <div class="mu" id="imfile"></div>
+      <label class="sw"><input type="checkbox" id="imHdr" checked>First row has headers</label>
+      <div class="imgrid">
+        <label>Phone<select id="imPhone"></select></label>
+        <label>Name<select id="imName"></select></label>
+        <label>Email<select id="imMail"></select></label>
+      </div>
+      <div class="imprev" id="imprev"></div>
+      <div class="seg" id="imMode"><button data-m="add" class="on">Add to list</button><button data-m="replace">Replace list</button></div>
+      <button class="btn go" id="imgo">Import</button>
+    </div>
+  </div>
+  <input type="file" id="csvFile" accept=".csv,.tsv,.txt,text/csv" hidden>
+
+  <!-- call window -->
+  <div class="modal" id="cm" hidden>
+    <div class="cw" id="pcard" data-s="dialing">
+      <div class="cwtop"><button class="ib" id="snd" title="Sound"></button><button class="an" id="anBtn" title="Call the next contact automatically"><span class="ico" data-i="next"></span>Auto-next<i class="tg"></i></button><button class="ib" id="cclose"></button></div>
+      <div class="stage" id="cstage"><div class="vine still" id="cvine"><div class="cl"></div></div><div class="mkwrap" id="cmkw"></div><div class="sk" id="csk"></div><div class="cav" id="cav"></div></div>
+      <h2 id="cname"></h2><div class="cnum" id="cphone"></div>
+      <div class="spill"><i></i><span id="clabel"></span></div>
+      <div class="ctimer" id="ctimer">00:00</div>
+      <div class="wave" id="wave"></div><div class="cres" id="cres"></div>
+      <div class="steps4" id="steps4"></div>
+      <div class="syncs"><span class="sy" id="sy-ph"></span><span class="sy" id="sy-sh"></span></div>
+      <div class="cnote" id="cnote" hidden><div class="qchips" id="qchips"></div><input id="cremark" type="text" placeholder="Remark for the sheet (optional)"></div>
+      <div class="cacts" id="cacts"></div>
+      <div class="cdbar" id="cdbar" hidden><i></i></div>
+      <div class="chint" id="chint"></div>
+    </div>
+  </div>
+  <!-- lunch window -->
+  <div class="modal" id="lw" hidden>
+    <div class="cw lw" id="lcard" data-m="ask">
+      <div class="stage lst" id="lst"><div class="mkwrap" id="lmkw"></div><div class="sk lsk" id="lsk"></div></div>
+      <h2 id="ltitle"></h2><p class="lsub" id="lsub"></p>
+      <div class="lbig" id="lbig" hidden>00:00</div><div class="cdbar" id="lbar" hidden><i></i></div>
+      <div class="lacts" id="lacts"></div>
+    </div>
+  </div>
+  <!-- monkey buddy: pep talks and water reminders -->
+  <div class="buddy" id="buddy" hidden>
+    <div class="bmk" id="bmk"></div>
+    <div class="bbody"><b id="bname"></b><p id="btext"></p><div class="bact" id="bact"></div></div>
+    <button class="ib bx" id="bclose" title="Dismiss"></button>
+  </div>
+  <div class="toast" id="toast" hidden></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
