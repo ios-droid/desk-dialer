@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2Jk11RQoqc2rubQEuX6i61SUTk5yYXCVHue546h8UxKqi41E74B42dXdugUeOSAp1AzfBOUwCdUrHweJokC5MEWu4DqKwZKyTis5JEeoP1Ku+elBxdVIT8BG+wrL9yBc8QU90d76GU/kzSriiOwLswFMjvKVXwxFTelF+vP6Q0R49LsuP6NE52uHV58Pe2o7rcWFCVSAUwpSHyPBuvJoWiaWs4SA/GaMEwR7TERXi09ZNM/bA6uCFtrZEpA1giQ85PM37SO+sam7AFAIHGHfadJ8FCslIgpdiapeXLwaNEMWnV+3c+ePX1QnZDVErATCqL+e7q3NYP58bE5L+YYStQIDAQAB",
   "name": "Desk Dialer",
-  "version": "9.4.0",
+  "version": "9.4.1",
   "description": "Dial contacts from your Grandstream desk phone and log answered calls to your own Google Sheet.",
   "permissions": [
     "storage",
